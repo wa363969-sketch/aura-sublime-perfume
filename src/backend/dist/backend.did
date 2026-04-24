@@ -1,0 +1,218 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   email: text;
+   joinDate: Timestamp;
+   name: text;
+ };
+type UserEntry = 
+ record {
+   principalId: text;
+   profile: UserProfile;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Timestamp = int;
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type ReviewId = nat;
+type Review = 
+ record {
+   comment: text;
+   createdAt: Timestamp;
+   id: ReviewId;
+   productId: ProductId;
+   rating: nat;
+   userId: principal;
+ };
+type ProductInput = 
+ record {
+   description: text;
+   fragranceType: FragranceType;
+   image: ExternalBlob;
+   name: text;
+   price: nat;
+   stock: nat;
+ };
+type ProductId = nat;
+type Product = 
+ record {
+   description: text;
+   fragranceType: FragranceType;
+   id: ProductId;
+   image: ExternalBlob;
+   name: text;
+   price: nat;
+   rating: float64;
+   reviewCount: nat;
+   stock: nat;
+ };
+type OrderStatus = 
+ variant {
+   cancelled;
+   confirmed;
+   delivered;
+   pending;
+   processing;
+   shipped;
+ };
+type OrderItem = 
+ record {
+   priceAtPurchase: nat;
+   productId: ProductId;
+   productName: text;
+   quantity: nat;
+ };
+type OrderId = nat;
+type Order = 
+ record {
+   createdAt: Timestamp;
+   id: OrderId;
+   items: vec OrderItem;
+   status: OrderStatus;
+   totalAmount: nat;
+   updatedAt: Timestamp;
+   userId: principal;
+ };
+type FragranceType = 
+ variant {
+   chypre;
+   citrus;
+   floral;
+   fougere;
+   fresh;
+   gourmand;
+   oriental;
+   woody;
+ };
+type ExternalBlob = blob;
+type DashboardStats = 
+ record {
+   lowStockAlerts: vec Product;
+   totalOrders: nat;
+   totalProducts: nat;
+   totalRevenue: nat;
+ };
+type CartItem = 
+ record {
+   productId: ProductId;
+   quantity: nat;
+ };
+type CartEntry = 
+ record {
+   cart: Cart;
+   principalId: text;
+ };
+type Cart = 
+ record {
+   items: vec CartItem;
+   userId: principal;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addReview: (productId: ProductId, rating: nat, comment: text) -> (Review);
+  addToCart: (productId: nat, quantity: nat) -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  clearCart: () -> ();
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  createOrder: () -> (Order);
+  createProduct: (input: ProductInput) -> (Product);
+  deleteProduct: (id: ProductId) -> (bool);
+  deleteReview: (reviewId: ReviewId) -> ();
+  deleteUserProfile: (principalText: text) -> ();
+  getAllCarts: () -> (vec CartEntry) query;
+  getAllOrders: () -> (vec Order) query;
+  getAllReviews: () -> (vec Review) query;
+  getAllUsers: () -> (vec UserEntry) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCart: () -> (Cart) query;
+  getDashboardStats: () -> (DashboardStats) query;
+  getMyOrders: () -> (vec Order) query;
+  getOrder: (orderId: OrderId) -> (opt Order) query;
+  getProduct: (id: ProductId) -> (opt Product) query;
+  getProducts: () -> (vec Product) query;
+  getReviewsByProduct: (productId: ProductId) -> (vec Review) query;
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isAdmin: () -> (bool) query;
+  isCallerAdmin: () -> (bool) query;
+  isStripeConfigured: () -> (bool) query;
+  removeAdminRole: (user: principal) -> ();
+  removeFromCart: (productId: nat) -> ();
+  saveCallerUserProfile: (name: text, email: text) -> (UserProfile);
+  setAdminRole: (user: principal) -> ();
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateCartQuantity: (productId: nat, quantity: nat) -> ();
+  updateOrderStatus: (orderId: OrderId, status: OrderStatus) -> (opt Order);
+  updateProduct: (id: ProductId, input: ProductInput) -> (opt Product);
+  updateUserProfile: (name: text, email: text) -> (opt UserProfile);
+}

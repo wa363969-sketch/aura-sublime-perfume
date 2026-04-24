@@ -1,0 +1,25 @@
+{
+  "overview": "Aura Sublime Perfume is a full-stack luxury perfume e-commerce website featuring a stunning product catalog, shopping cart, Stripe checkout, user accounts, and a powerful admin dashboard for inventory and order management.",
+  "features": [
+    "Hero landing page with brand story and CTA",
+    "Product catalog with fragrance type filters and search",
+    "Product detail pages with notes, ratings, and reviews",
+    "Shopping cart with real-time quantity updates",
+    "Stripe-powered checkout and order confirmation",
+    "User accounts with order history via Internet Identity",
+    "Admin dashboard for product, inventory, and order management",
+    "Sales analytics and low-stock alerts",
+    "Image storage via object-storage extension"
+  ],
+  "category": "e-commerce",
+  "tags": [
+    "perfume",
+    "e-commerce",
+    "luxury",
+    "retail",
+    "shop",
+    "admin",
+    "stripe"
+  ],
+  "last_updated": "2026-04-24T17:57:30.910Z"
+}

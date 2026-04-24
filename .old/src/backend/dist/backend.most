@@ -1,0 +1,105 @@
+// Version: 1.0.0
+type CartItem__1044444615 =
+  {productId : ProductId__160010635; quantity : Nat};
+type Cart__949090555 = {items : [CartItem__1044444615]; userId : Principal};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type ExternalBlob__671167343 = Blob;
+type FragranceType__385087422 =
+  {#chypre; #citrus; #floral; #fougere; #fresh; #gourmand; #oriental; #woody};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OrderId__197865225 = Nat;
+type OrderItem__241319351 =
+  {
+    priceAtPurchase : Nat;
+    productId : ProductId__160010635;
+    productName : Text;
+    quantity : Nat
+  };
+type OrderStatus__272730104 =
+  {#cancelled; #confirmed; #delivered; #pending; #processing; #shipped};
+type Order__141779993 =
+  {
+    createdAt : Timestamp__301639476;
+    id : OrderId__197865225;
+    items : [OrderItem__241319351];
+    status : OrderStatus__272730104;
+    totalAmount : Nat;
+    updatedAt : Timestamp__301639476;
+    userId : Principal
+  };
+type ProductId__160010635 = Nat;
+type Product__750902660 =
+  {
+    description : Text;
+    fragranceType : FragranceType__385087422;
+    id : ProductId__160010635;
+    image : ExternalBlob__671167343;
+    name : Text;
+    price : Nat;
+    rating : Float;
+    reviewCount : Nat;
+    stock : Nat
+  };
+type ReviewId__496285678 = Nat;
+type Review__513345496 =
+  {
+    comment : Text;
+    createdAt : Timestamp__301639476;
+    id : ReviewId__496285678;
+    productId : ProductId__160010635;
+    rating : Nat;
+    userId : Principal
+  };
+type StripeConfiguration__87721349 =
+  {allowedCountries : [Text]; secretKey : Text};
+type Timestamp__301639476 = Int;
+type UserProfile__277265826 =
+  {email : Text; joinDate : Timestamp__301639476; name : Text};
+type UserRole__1073662873 = {#admin; #guest; #user};
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1073662873>
+    };
+  stable carts :
+    {
+      var root : Node__46230540<Principal, Cart__949090555>;
+      var size : Nat__490723111
+    };
+  stable var nextOrderId : Nat;
+  stable var nextProductId : Nat;
+  stable var nextReviewId : Nat;
+  stable orders :
+    {
+      var root : Node__46230540<OrderId__197865225, Order__141779993>;
+      var size : Nat__490723111
+    };
+  stable products :
+    {
+      var root : Node__46230540<ProductId__160010635, Product__750902660>;
+      var size : Nat__490723111
+    };
+  stable reviews :
+    {
+      var root : Node__46230540<ReviewId__496285678, Review__513345496>;
+      var size : Nat__490723111
+    };
+  stable var stripeConfig : ?StripeConfiguration__87721349;
+  stable userProfiles :
+    {
+      var root : Node__46230540<Principal, UserProfile__277265826>;
+      var size : Nat__490723111
+    }
+};
